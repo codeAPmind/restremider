@@ -1,0 +1,1 @@
+def s():return {'bg_color': 'white', 'alpha': '1', 'text_font': 'Microsoft YaHei', 'text_size': 16, 'arrow_up': '0up.png', 'arrow_down': '0down.png', 'shortcut': '<Alt-q>', 'sound_file': 'msg.wav', 'sound_on': False, 'watchlist': 'config.xlsx', 'qrcode': 'weixin.png'}

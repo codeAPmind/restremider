@@ -74,7 +74,7 @@ def showMsgGapFisrt():
         root.protocol("WM_DELETE_WINDOW", on_closing)
         global firstshow
         if(firstshow != False):
-            messagebox.showinfo("Message", "gap time is null, set  gap time first .")
+            messagebox.showinfo("Message", "时间设置错误, 请填入正确时间 .")
         firstshow = True
         root.mainloop()
 '''

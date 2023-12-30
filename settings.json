@@ -1,6 +1,15 @@
 {
-    "bg_color": "white",  
-    "alpha": "1.0",
-    "turnover-rate":"3",
-    "upper":"3"
+ "bg_color": "white",
+ "alpha": "1",
+ "text_font": "Microsoft YaHei",
+ "text_size": 16,
+ "arrow_up": "0up.png",
+ "arrow_down": "0down.png",
+ "shortcut": "<Alt-q>",
+ "sound_file": "rest.wav",
+ "sound_on": false,
+ "watchlist": "config.xlsx",
+ "qrcode": "weixin.png",
+ "restminutes": 5,
+ "workminutes": 10
 }
