@@ -132,11 +132,9 @@ class SetDialog(tk.Toplevel):
             iswork =True
             
         if str(self.parent.settings.restminutes) not in newrestminutes:
-            print("=======ssssssdddddd")
             self.parent.settings.restminutes  = int(newrestminutes )
 
         if str(self.parent.settings.workminutes) not in newworkminutes:
-            print("=======ssssssdddddd",int(newworkminutes ))
             self.parent.settings.workminutes  = int(newworkminutes )
 
         

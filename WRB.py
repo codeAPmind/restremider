@@ -1,4 +1,3 @@
-import sys
 import time
 import datetime
 from pynput import keyboard, mouse
@@ -7,7 +6,7 @@ from loguru import logger
 import tkinter as tk
 from tkinter import messagebox
 
-import dataclasses
+import sys,os,time,math,datetime,random,dataclasses
 # os.environ['REQUESTS_CA_BUNDLE'] =  os.path.join(os.path.dirname(sys.argv[0]), 'cacert.pem')
 
 
@@ -95,6 +94,7 @@ class RestReminderWin(tk.Tk):
         self.keyboard_listener = None
         self.login_window = None
         self.load_settings('settings.json')
+        self.verify()
         self.initUI()
     
     def starttimer(self):
@@ -107,7 +107,18 @@ class RestReminderWin(tk.Tk):
         self.state('zoomed') 
         # ctypes.windll.user32.FlashWindow(ctypes.windll.kernel32.GetConsoleWindow(), True )#ctypes.windll.kernel32.GetConsoleWindow()
         
-
+    def verify(self):
+        self.license=path(datfile())
+        self.IsFreetrial = not self.license
+        self.query=query(self.license) if self.license else query(permit()) if os.path.exists(permit()) else trial(permit(),key(sample()))
+        self.key=self.query[0][0]
+        self.result=self.query[0][-1]
+        self.endTimeStr = self.query[0][1]
+        for k,v in zip(self.key._fields,self.key):setattr(self,k,v)
+        self.ver=f'{self.version}'
+        self.endTimeStr2=datetime.datetime.strptime(self.endTimeStr,'%a %b %d %H:%M:%S %Y').strftime("%Y-%m-%d %H:%M:%S")
+        self.title(f"{name()} {self.version} {self.edition} {int((self.time-time.time())/86400)} days. © {time.strftime('%Y')} 图正的小店")
+        print("tile seting ")
 
     def load_settings(self,f):
         self.settingsfile=path(f)
@@ -143,7 +154,7 @@ class RestReminderWin(tk.Tk):
     def initUI(self):
         # self.title("Main")
         
-        self.title("Work-Rest Balance")
+        # self.title("Work-Rest Balance")
         self.geometry("500x400")
         # self.bg_color = "white"
         self.config(bg=self.settings.bg_color)
@@ -160,8 +171,8 @@ class RestReminderWin(tk.Tk):
 
 
 
-        if check_license() is False:
-            return
+        # if check_license() is False:
+        #     return
 
         # self.configure(bg='black')  # Set the window background color here
         # self.attributes('-alpha', 0.3)  # Set the window transparency here
@@ -221,7 +232,7 @@ class RestReminderWin(tk.Tk):
         # Rest of your code...
         global timeGap
         if key_elapsed_time > timeGap :
-            timeGap += 5 * 6000
+            timeGap += int(self.settings.restminutes) * 6000
             print("time gap", timeGap)
             mouse_elapsed_time = 0
             key_elapsed_time = 0
@@ -250,7 +261,7 @@ class RestReminderWin(tk.Tk):
         # Rest of your code...
         global timeGap
         if key_elapsed_time > timeGap :
-            timeGap += 5 * 6000
+            timeGap += int(self.settings.restminutes)  * 6000
             print("time gap", timeGap)
             mouse_elapsed_time = 0
             key_elapsed_time = 0

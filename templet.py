@@ -1,1 +1,1 @@
-def s():return {'time': 21, 'pc': 189463337125052, 'app': 'EasyStock', 'version': 1.0, 'edition': 'Trial', 'mobile': 13510681710, 'MINUTESGAP': 10, 'STOCKNUM': 10, 'STOCKNUM2': 2}
+def s():return {'time': 21, 'pc': 189463337125052, 'app': 'WRB', 'version': 1.0, 'edition': 'Trial', 'mobile': 13510681710, 'MINUTESGAP': 10, 'STOCKNUM': 10, 'STOCKNUM2': 2}
