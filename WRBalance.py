@@ -14,7 +14,7 @@ from name import datfile,name,path
 from keygen import query,permit,trial,key,sample,load,dump1,nt,dc,values
 import setting
 
-DEBUG =  True
+DEBUG =  False
 
 
 
@@ -26,6 +26,8 @@ class RestReminderWin(tk.Tk):
         self.reminderTimes = 0
         self.isWork = False
         self.login_window = None
+        self.work_id = None
+        self.rest_id = None
         self.load_settings('settings.json')
         self.verify()
         self.initUI()
@@ -75,7 +77,7 @@ class RestReminderWin(tk.Tk):
         
         
     def initUI(self):
-        self.geometry("400x300")
+        self.geometry("420x230")
         self.attributes('-alpha', self.settings.alpha) 
         self.configure(bg=self.settings.bg_color)  
 
@@ -126,26 +128,34 @@ class RestReminderWin(tk.Tk):
 
     def enable_button_with_countdown(self, seconds_left):
         if seconds_left > 0:
-            self.update_button.config(state="disabled")
+            # self.update_button.config(state="disabled")
             self.update_button.config(text=f"休息时间 ({int(seconds_left/60)}分{seconds_left%60}秒)")
-            self.after(1000, lambda: self.enable_button_with_countdown(seconds_left - 1))
+            self.rest_id = self.after(1000, lambda: self.enable_button_with_countdown(seconds_left - 1))
         else:
-            self.update_button.config(state="normal")
-            self.start_work()
+            # self.update_button.config(state="normal")
+            self.reminderTimes += 1
+            if "Trial" in self.edition:
+                if self.reminderTimes >= 2:
+                    self.update_button.config(text="开始工作")
+                    messagebox.showwarning("Version Notes", "试用版连续提醒已超过限制，请手动再次开始或者购买升级")
+                    return
+            self.contiue_work()
             
-            
+    def cancel_work(self):
+        if self.isWork:
+            if self.work_id:
+                self.after_cancel(self.work_id)  # Cancel the after event
+                self.work_id = None  # Reset the after_id 
+        else:
+            if self.rest_id:
+                self.after_cancel(self.rest_id)  # Cancel the after event
+                self.rest_id = None  # Reset the after_id 
 
     def work_button(self,seconds_left):
         if seconds_left > 0:
             self.update_button.config(text=f"工作进行中 ({int(seconds_left/60)}分{seconds_left%60}秒)")
-            self.after(1000, lambda: self.work_button(seconds_left - 1))
+            self.work_id = self.after(1000, lambda: self.work_button(seconds_left - 1))
         else:
-            self.reminderTimes += 1
-            if "Trial" in self.edition:
-                if self.reminderTimes >= 3:
-                    self.update_button.config(text="开始工作")
-                    messagebox.showwarning("Version Notes", "试用版提醒已超过限制，请手动再次开始或者升级购买")
-                    return
             self.set_reminder()
             self.arrow()
             self.enable_button_with_countdown(int(self.settings.restminutes) * 60)
@@ -189,12 +199,23 @@ class RestReminderWin(tk.Tk):
                 dump1(dataclasses.asdict(self.settings),self.settingsfile)
         self.destroy()
 
-    def start_work(self):
+    def contiue_work(self):
+        self.cancel_work()
         self.check_Time()
         self.work_button(int(self.settings.workminutes)*60)
         self.set_work_msg()
         self.isWork = True
         self.arrow()
+
+    def start_work(self):
+        self.reminderTimes = 0
+        self.contiue_work()
+        # self.cancel_work()
+        # self.check_Time()
+        # self.work_button(int(self.settings.workminutes)*60)
+        # self.set_work_msg()
+        # self.isWork = True
+        # self.arrow()
                     
         
 if __name__ == '__main__':

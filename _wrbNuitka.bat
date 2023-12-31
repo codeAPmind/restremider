@@ -1,3 +1,4 @@
-set c=F:\python-3.8.10
+set c=F:\Python-3.8.10
 call _wrb.bat
 @REM pause
+pause

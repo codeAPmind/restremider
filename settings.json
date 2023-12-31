@@ -1,8 +1,8 @@
 {
- "bg_color": "white",
+ "bg_color": "green",
  "alpha": "1",
  "text_font": "Microsoft YaHei",
- "text_size": 16,
+ "text_size": 13,
  "arrow_up": "0up.png",
  "arrow_down": "0down.png",
  "shortcut": "<Alt-q>",
@@ -11,5 +11,5 @@
  "watchlist": "config.xlsx",
  "qrcode": "weixin.png",
  "restminutes": 5,
- "workminutes": 10
+ "workminutes": 30
 }
