@@ -129,7 +129,7 @@ class SetDialog(tk.Toplevel):
         if self.parent.settings.bg_color not in newBg:
             # print("=======ssssssdddddd")
             self.parent.settings.bg_color  = newBg 
-            iswork =True
+            isUpdatebg =True
             
         if str(self.parent.settings.restminutes) not in newrestminutes:
             self.parent.settings.restminutes  = int(newrestminutes )

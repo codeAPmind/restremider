@@ -28,9 +28,6 @@ class RestReminderWin(tk.Tk):
         self.mouse_listener = None
         self.keyboard_listener = None
         self.login_window = None
-        self.key_elapsed_time = 0
-        self.mouse_elapsed_time = 0
-        self.key_start_time = 0
         self.load_settings('settings.json')
         self.verify()
         self.initUI()
@@ -74,7 +71,7 @@ class RestReminderWin(tk.Tk):
             self.attributes('-alpha', self.settings.alpha)  
         
         if isUpdatebg:
-            self.config(bg=self.settings.bg_color)
+            self.configure(bg=self.settings.bg_color)  
         
         if isUpdateSize:
             self.timeUpdate.config(font=(self.settings.text_font, int(self.settings.text_size)))
@@ -100,10 +97,15 @@ class RestReminderWin(tk.Tk):
         self.timeUpdate = tk.Entry(self, width=17)
 
         self.timeUpdate.grid(row=1, column=0,sticky='nsew',pady=(10, 0)) 
+        self.timeUpdate.config(font=(self.settings.text_font, int(self.settings.text_size)))
 
-        self.update_button = tk.Button(self, text="start work", command=self.start_work)
+        self.update_button = tk.Button(self, text="开始工作", command=self.start_work)
         self.update_button.grid(row=0, column=0,sticky='nsew',pady=(10, 0)) 
-        
+        self.update_button.config(font=(self.settings.text_font, int(self.settings.text_size)))
+        if isinstance(self.result,tuple) and not all(self.result):
+            self.update_button.config(state="disabled")
+            messagebox.showwarning("License Error", f"{', '.join(j for i,j in zip(self.result,('软件过期','硬件错误','程序错误','授权错误')) if not i)}, 联系微信号w809500586购买")
+
 
     def vibrate_window(self, magnitude, duration, steps):
         x, y = self.winfo_x(), self.winfo_y()
@@ -121,35 +123,7 @@ class RestReminderWin(tk.Tk):
             t1.start()
         except:
             pass
-        self.set_work_rest_msg()
         self.flash()
-
-    def init_time(self):
-        self.mouse_elapsed_time = 0
-        self.key_elapsed_time = 0
-        self.key_start_time = time.time()
-
-
-    def press_test(self,key):
-        self.key_elapsed_time += time.time() - self.key_start_time
-        print("press_test ke elapse time",self.key_elapsed_time) if DEBUG else None
-        if self.key_elapsed_time > self.settings.workminutes * 6000 :
-            self.init_time()
-            self.set_reminder()
-            self.enable_button_with_countdown(int(self.settings.restminutes) * 60)
-            self.close_listeners()
-
-            
-    def click_test(self,x, y, button, pressed):
-        if pressed is  False:
-            return
-        self.key_elapsed_time += time.time() - self.key_start_time
-        print("ke elapse time",self.key_elapsed_time) if DEBUG else None
-        if self.key_elapsed_time > self.settings.workminutes * 6000 :
-            self.init_time()
-            self.set_reminder()
-            self.enable_button_with_countdown(int(self.settings.restminutes) * 60)
-            self.close_listeners()
 
 
     def enable_button_with_countdown(self, seconds_left):
@@ -159,9 +133,15 @@ class RestReminderWin(tk.Tk):
             self.after(1000, lambda: self.enable_button_with_countdown(seconds_left - 1))
         else:
             self.update_button.config(state="normal")
-            self.update_button.config(text="工作进行中")
             self.start_work()
 
+    def work_button(self,seconds_left):
+        if seconds_left > 0:
+            self.update_button.config(text=f"工作进行中 ({int(seconds_left/60)}分{seconds_left%60}秒)")
+            self.after(1000, lambda: self.work_button(seconds_left - 1))
+        else:
+            self.set_reminder()
+            self.enable_button_with_countdown(int(self.settings.restminutes) * 60)
 
     def play_sound(self):
         if self.settings.sound_on:
@@ -171,9 +151,8 @@ class RestReminderWin(tk.Tk):
                 play_obj = wave_obj.play()
                 play_obj.wait_done()
                           
-    def getGapTime(self):
+    def check_Time(self):
         set = self.settings.workminutes
-        # set = self.timeSet.text()/
         if set <= 0:
             try:
                 t1 = Thread(target=showMsgGapFisrt)
@@ -183,7 +162,8 @@ class RestReminderWin(tk.Tk):
             return False
     
 
-    def set_work_rest_msg(self):
+    def set_work_msg(self):
+        self.update_button.config(text="工作进行中")
         current_time = datetime.datetime.now()
         print("self.settings.workminutes",self.settings.workminutes) if DEBUG else None
         time_after_random_seconds = current_time + datetime.timedelta(seconds=int(self.settings.workminutes)*60)
@@ -199,26 +179,10 @@ class RestReminderWin(tk.Tk):
         self.destroy()
 
     def start_work(self):
-        self.init_time()
-        self.getGapTime()
-        self.keyboard_listener = keyboard.Listener(on_press=self.press_test)
-        self.mouse_listener = mouse.Listener(on_click=self.click_test)
-        self.keyboard_listener.start()
-        self.mouse_listener.start()
-        self.set_work_rest_msg()
-                
-
-    def close_listeners(self):
-        if self.mouse_listener:
-            print("closing stop ") if DEBUG else None
-            self.mouse_listener.stop()
-        if self.keyboard_listener:
-            self.keyboard_listener.stop()
-
-    def closeEvent(self, event):
-        self.close_listeners()
-        event.accept()
-        
+        self.check_Time()
+        self.work_button(int(self.settings.workminutes)*60)
+        self.set_work_msg()
+                    
         
 if __name__ == '__main__':
     logger.add('worker.log') 
