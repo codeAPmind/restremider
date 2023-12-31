@@ -1,12 +1,11 @@
-from pynput import keyboard, mouse
+# from pynput import keyboard, mouse
 from threading import Thread
-from loguru import logger
+# from loguru import logger
 import tkinter as tk
 from tkinter import messagebox
 
-import sys,os,time,math,datetime,random,dataclasses
+import os,time,datetime,dataclasses,webbrowser
 # os.environ['REQUESTS_CA_BUNDLE'] =  os.path.join(os.path.dirname(sys.argv[0]), 'cacert.pem')
-
 
 from Message import showMsgGapFisrt
 import simpleaudio as sa
@@ -24,9 +23,8 @@ class RestReminderWin(tk.Tk):
         super().__init__()
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
         self.keys = ''
-        self.values = ''
-        self.mouse_listener = None
-        self.keyboard_listener = None
+        self.reminderTimes = 0
+        self.isWork = False
         self.login_window = None
         self.load_settings('settings.json')
         self.verify()
@@ -37,8 +35,6 @@ class RestReminderWin(tk.Tk):
         self.root.after(1000*5, self.starttimer) 
         
     def flash(self):
-        # hwnd = self.root.winfo_id() 
-        # print("flashing ",hwnd)
         self.state('zoomed') 
         # ctypes.windll.user32.FlashWindow(ctypes.windll.kernel32.GetConsoleWindow(), True )#ctypes.windll.kernel32.GetConsoleWindow()
         
@@ -79,7 +75,7 @@ class RestReminderWin(tk.Tk):
         
         
     def initUI(self):
-        self.geometry("500x400")
+        self.geometry("400x300")
         self.attributes('-alpha', self.settings.alpha) 
         self.configure(bg=self.settings.bg_color)  
 
@@ -89,12 +85,13 @@ class RestReminderWin(tk.Tk):
 
         context_menu = tk.Menu(self, tearoff=0)
         context_menu.add_command(label="设置", command=self.show_set_window)
+        context_menu.add_command(label="购买", command=lambda:webbrowser.open("https://item.taobao.com/item.htm?id=753192371704"))
         self.bind("<Button-3>", lambda event: context_menu.post(event.x_root, event.y_root))
 
         current_time = datetime.datetime.now()
         current_time_string = current_time.strftime("%Y-%m-%d %H:%M:%S")
         
-        self.timeUpdate = tk.Entry(self, width=17)
+        self.timeUpdate = tk.Text(self, width=20, height=2) 
 
         self.timeUpdate.grid(row=1, column=0,sticky='nsew',pady=(10, 0)) 
         self.timeUpdate.config(font=(self.settings.text_font, int(self.settings.text_size)))
@@ -124,6 +121,7 @@ class RestReminderWin(tk.Tk):
         except:
             pass
         self.flash()
+        self.isWork = False
 
 
     def enable_button_with_countdown(self, seconds_left):
@@ -134,13 +132,22 @@ class RestReminderWin(tk.Tk):
         else:
             self.update_button.config(state="normal")
             self.start_work()
+            
+            
 
     def work_button(self,seconds_left):
         if seconds_left > 0:
             self.update_button.config(text=f"工作进行中 ({int(seconds_left/60)}分{seconds_left%60}秒)")
             self.after(1000, lambda: self.work_button(seconds_left - 1))
         else:
+            self.reminderTimes += 1
+            if "Trial" in self.edition:
+                if self.reminderTimes >= 3:
+                    self.update_button.config(text="开始工作")
+                    messagebox.showwarning("Version Notes", "试用版提醒已超过限制，请手动再次开始或者升级购买")
+                    return
             self.set_reminder()
+            self.arrow()
             self.enable_button_with_countdown(int(self.settings.restminutes) * 60)
 
     def play_sound(self):
@@ -158,9 +165,13 @@ class RestReminderWin(tk.Tk):
                 t1 = Thread(target=showMsgGapFisrt)
                 t1.start()
             except:
-                logger.debug("error, no set gap time")
+                pass
+                # logger.debug("error, no set gap time")
             return False
     
+    def arrow(self):
+        f=path(self.settings.arrow_up if self.isWork else self.settings.arrow_down)
+        self.iconphoto(False,tk.PhotoImage(file=f)) if f else None
 
     def set_work_msg(self):
         self.update_button.config(text="工作进行中")
@@ -169,8 +180,8 @@ class RestReminderWin(tk.Tk):
         time_after_random_seconds = current_time + datetime.timedelta(seconds=int(self.settings.workminutes)*60)
         formatted_current_time = current_time.strftime("%H:%M:%S")
         formatted_time = time_after_random_seconds.strftime("%H:%M:%S") #%Y-%m-%d %H:%M:%S
-        self.timeUpdate.delete(0, tk.END)  # Clear the current content
-        self.timeUpdate.insert(0, f'开始工作时间: {formatted_current_time}   结束工作时间: {formatted_time}   休息{self.settings.restminutes}分钟')  # Set the new content
+        self.timeUpdate.delete('1.0', tk.END)  # Clear the current content
+        self.timeUpdate.insert('1.0', f'开始工作时间: {formatted_current_time}  结束工作时间: {formatted_time}\n休息{self.settings.restminutes}分钟')  # Set the new content
 
     def on_closing(self):
         if any(i!=j for i,j in zip(values(self.settings),self.settings0)):
@@ -182,10 +193,12 @@ class RestReminderWin(tk.Tk):
         self.check_Time()
         self.work_button(int(self.settings.workminutes)*60)
         self.set_work_msg()
+        self.isWork = True
+        self.arrow()
                     
         
 if __name__ == '__main__':
-    logger.add('worker.log') 
+    # logger.add('worker.log') 
     app = RestReminderWin()
     app.mainloop()
 
