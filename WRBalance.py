@@ -1,6 +1,5 @@
 # from pynput import keyboard, mouse
 from threading import Thread
-# from loguru import logger
 import tkinter as tk
 from tkinter import messagebox
 
@@ -210,12 +209,6 @@ class RestReminderWin(tk.Tk):
     def start_work(self):
         self.reminderTimes = 0
         self.contiue_work()
-        # self.cancel_work()
-        # self.check_Time()
-        # self.work_button(int(self.settings.workminutes)*60)
-        # self.set_work_msg()
-        # self.isWork = True
-        # self.arrow()
                     
         
 if __name__ == '__main__':
