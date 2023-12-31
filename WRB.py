@@ -15,6 +15,8 @@ from name import datfile,name,path
 from keygen import query,permit,trial,key,sample,load,dump1,nt,dc,values
 import setting
 
+DEBUG =  True
+
 
 
 class RestReminderWin(tk.Tk):
@@ -81,8 +83,8 @@ class RestReminderWin(tk.Tk):
         
     def initUI(self):
         self.geometry("500x400")
-        self.config(bg=self.settings.bg_color)
-        self.attributes('-alpha', self.settings.alpha)
+        self.attributes('-alpha', self.settings.alpha) 
+        self.configure(bg=self.settings.bg_color)  
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_rowconfigure(1, weight=1)
@@ -130,7 +132,7 @@ class RestReminderWin(tk.Tk):
 
     def press_test(self,key):
         self.key_elapsed_time += time.time() - self.key_start_time
-        print("press_test ke elapse time",self.key_elapsed_time)
+        print("press_test ke elapse time",self.key_elapsed_time) if DEBUG else None
         if self.key_elapsed_time > self.settings.workminutes * 6000 :
             self.init_time()
             self.set_reminder()
@@ -142,7 +144,7 @@ class RestReminderWin(tk.Tk):
         if pressed is  False:
             return
         self.key_elapsed_time += time.time() - self.key_start_time
-        print("ke elapse time",self.key_elapsed_time)
+        print("ke elapse time",self.key_elapsed_time) if DEBUG else None
         if self.key_elapsed_time > self.settings.workminutes * 6000 :
             self.init_time()
             self.set_reminder()
@@ -183,7 +185,7 @@ class RestReminderWin(tk.Tk):
 
     def set_work_rest_msg(self):
         current_time = datetime.datetime.now()
-        print("self.settings.workminutes",self.settings.workminutes)
+        print("self.settings.workminutes",self.settings.workminutes) if DEBUG else None
         time_after_random_seconds = current_time + datetime.timedelta(seconds=int(self.settings.workminutes)*60)
         formatted_current_time = current_time.strftime("%H:%M:%S")
         formatted_time = time_after_random_seconds.strftime("%H:%M:%S") #%Y-%m-%d %H:%M:%S
@@ -208,7 +210,7 @@ class RestReminderWin(tk.Tk):
 
     def close_listeners(self):
         if self.mouse_listener:
-            print("closing stop ")
+            print("closing stop ") if DEBUG else None
             self.mouse_listener.stop()
         if self.keyboard_listener:
             self.keyboard_listener.stop()
