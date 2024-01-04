@@ -37,7 +37,7 @@ class Client:
         #     self.bios = ""
             
         try:
-            with open('EasyStock.json', 'r') as f:
+            with open('WRBalance.json', 'r') as f:
                 info = json.load(f)
                 self.endTime = info['time']
                 self.version = info['version']

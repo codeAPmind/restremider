@@ -30,7 +30,7 @@ class Example_Label(QWidget):
         self.initUI()
 
     def getLicense(self):
-        data =  load_json("EasyStock.json")
+        data =  load_json("WRBalance.json")
         i = 0
         for key, value in data.items():
             if "License" in key:
@@ -65,7 +65,7 @@ class Example_Label(QWidget):
         i = 0
         self.lable0 =QLabel("LIcenseFile")
         self.edit0 = QLineEdit()
-        self.edit0.setText("EasyStock.json")
+        self.edit0.setText("WRBalance.json")
         
         
         grid.addWidget(self.lable0 ,i+1,0)
@@ -83,7 +83,7 @@ class Example_Label(QWidget):
         
         self.lableedition =QLabel("edition")
         self.editedition = QLineEdit()
-        self.editedition.setText(str(self.clientinfo.version))
+        self.editedition.setText(str(self.clientinfo.edition))
         
         grid.addWidget( self.lableedition ,i+5,0)
         grid.addWidget(self.editedition,i+6,0)
@@ -102,7 +102,7 @@ class Example_Label(QWidget):
 
         self.GenrerateLicLable=QLabel("Genrerate LicenseFile")
         self.GenrerateLicEdit = QLineEdit()
-        self.GenrerateLicEdit.setText("EasyStock.dat")
+        self.GenrerateLicEdit.setText("WRBalance.dat")
         grid.addWidget( self.GenrerateLicLable ,i+7,0)
         grid.addWidget(self.GenrerateLicEdit,i+8,0)
 
