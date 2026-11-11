@@ -8,9 +8,9 @@ def get_today_git_logs_for_user(author_name):
         "log",
         f"--since={today}T00:00:00",
         f"--until={today}T23:59:59",
-        f"--author={author_name}",
-        "--pretty=format:%h - %s (%ad)",
-        "--date=local"
+        # f"--author={author_name}",
+        # "--pretty=format:%h - %s (%ad)",
+        # "--date=local"
     ]
 
     try:
